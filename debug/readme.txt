@@ -1,0 +1,1 @@
+cp -rf test_gyro ~/your_catkin_ws/

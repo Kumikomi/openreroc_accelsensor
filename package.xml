@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package>
+  <name>openreroc_accelsensor</name>
+  <version>0.1.0</version>
+  <description>This package supports a accel sensor using an FPGA board (ZedBoard Xilinx).</description>
+
+  <maintainer email="openreroc@virgo.is.utsunomiya-u.ac.jp">Kazushi Yamashina</maintainer>
+  <maintainer email="openreroc@virgo.is.utsunomiya-u.ac.jp">Hitomi Kimura</maintainer>
+  <maintainer email="openreroc@virgo.is.utsunomiya-u.ac.jp">Takeshi Ohkawa</maintainer>
+
+  <license>new BSD</license>
+
+  <url type="website">website">http://kumikomi.github.io/OpenReroc</url>
+
+  <author email="kazushi@vigro.is.utunomiya-u.ac.jp">Kazushi Yamashina</author>
+
+
+  <build_depend>message_generation</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpensor</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <run_depend>roscpensor</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
