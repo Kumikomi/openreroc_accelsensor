@@ -1,3 +1,3 @@
-float32 real_gx
-float32 real_gy
-float32 real_gz
+float32 real_ax
+float32 real_ay
+float32 real_az

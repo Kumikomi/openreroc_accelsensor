@@ -33,12 +33,12 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "openreroc_accelsensor");
   ros::NodeHandle n;
-  ros::Publisher pub_openreroc_gyrosensor = n.advertise<openreroc_accelsensor::accel_sensor>("accel_sensor_value", 1000);
+  ros::Publisher pub_openreroc_accelsensor = n.advertise<openreroc_accelsensor::accel_sensor>("accel_sensor_value", 1000);
   // ros::Rate loop_rate(1);
 
   openreroc_accelsensor::accel_sensor msg;
   
-  gyrosensor_data cur;
+  accelsensor_data cur;
 
   while (ros::ok())
   {
@@ -54,9 +54,9 @@ int main(int argc, char **argv)
       accel_y_signed = (accel_y > 32768)? (accel_y-65535) : accel_y;
       accel_z_signed = (accel_z > 32768)? (accel_z-65535) : accel_z;   
 
-      msg.real_ax = accel_x_signed / 131.0;
-      msg.real_ay = accel_y_signed / 131.0;
-      msg.real_az = accel_z_signed / 131.0;
+      msg.real_ax = accel_x_signed / 16384.0;
+      msg.real_ay = accel_y_signed / 16384.0;
+      msg.real_az = accel_z_signed / 16384.0;
 
       //printf("x:%d\n",msg.gx);
       //printf("y:%d\n",msg.gy);
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
       printf("rawy:%d\n",accel_y);
       printf("rawz:%d\n",accel_z);
 
-      pub_openreroc_gyrosensor.publish(msg);
+      pub_openreroc_accelsensor.publish(msg);
     }
 
     cur.ax = accel_x;

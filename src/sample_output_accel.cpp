@@ -2,7 +2,7 @@
 #include "accel_sensor.h"
 #include <stdio.h>
 
-void chatterCallback(const openreroc_gyrosensor::accel_sensor msg)
+void chatterCallback(const openreroc_accelsensor::accel_sensor msg)
 {
     printf("x:%f\n",msg.real_ax);
     printf("y:%f\n",msg.real_ay);

@@ -10,10 +10,10 @@ input [0:0] rd_en_32,
 output [31:0] dout_32,
 output [0:0] full_32,
 output [0:0] empty_32,
-input [0:0] SPI_DI_g,
-output [0:0] SPI_SS_g,
-output [0:0] SPI_CK_g,
-output [0:0] SPI_DO_g
+input [0:0] SPI_DI_a,
+output [0:0] SPI_SS_a,
+output [0:0] SPI_CK_a,
+output [0:0] SPI_DO_a
 );
 
 parameter INIT_32 		= 0,
@@ -36,15 +36,15 @@ wire data_full_32;
 // state register
 reg [3:0] state_32;
 
-wire [15:0] gyro_x;
-wire [15:0] gyro_y;
-wire [15:0] gyro_z;
+wire [15:0] accel_x;
+wire [15:0] accel_y;
+wire [15:0] accel_z;
 
-reg [15:0] gyro_x_reg;
-reg [15:0] gyro_y_reg;
-reg [15:0] gyro_z_reg;
+reg [15:0] accel_x_reg;
+reg [15:0] accel_y_reg;
+reg [15:0] accel_z_reg;
 
-wire arm_rd_en_g;
+wire arm_rd_en_a;
 
 ////fifo 32bit
 fifo_32x512 input_fifo_32(
@@ -73,21 +73,37 @@ fifo_32x512 output_fifo_32(
 	.empty(empty_32)
 	);
 	
-MPU_gyro_controller MPU_gyro_controller(
+//MPU_gyro_controller MPU_gyro_controller(
+//	.clk(clk),
+//	.reset(rst_32),
+//	
+//	.gyro_x(gyro_x),
+//	.gyro_y(gyro_y),
+//	.gyro_z(gyro_z),
+//	
+//	.SPI_SS_g(SPI_SS_g),						//Sleve select
+//	.SPI_CK_g(SPI_CK_g),						//SCLK
+//	.SPI_DO_g(SPI_DO_g),						//Master out Sleve in
+//	.SPI_DI_g(SPI_DI_g),						//Master in Slave out
+//	
+//	.arm_read_enable_g(arm_rd_en_g) 		//finish sensing accel_xyz
+//);
+MPU_accel_controller MPU_accel_controller(
 	.clk(clk),
 	.reset(rst_32),
 	
-	.gyro_x(gyro_x),
-	.gyro_y(gyro_y),
-	.gyro_z(gyro_z),
+	.accel_x(accel_x),
+	.accel_y(accel_y),
+	.accel_z(accel_z),
+
+	.SPI_SS_a(SPI_SS_a),						//Sleve select 
+	.SPI_CK_a(SPI_CK_a),						//SCLK
+	.SPI_DO_a(SPI_DO_a),						//Master out Sleve in						
+	.SPI_DI_a(SPI_DI_a),						//Master in Slave out
 	
-	.SPI_SS_g(SPI_SS_g),						//Sleve select
-	.SPI_CK_g(SPI_CK_g),						//SCLK
-	.SPI_DO_g(SPI_DO_g),						//Master out Sleve in
-	.SPI_DI_g(SPI_DI_g),						//Master in Slave out
-	
-	.arm_read_enable_g(arm_rd_en_g) 		//finish sensing accel_xyz
+	.arm_read_enable_a(arm_rd_en_a) 						//finish sensing accel_xyz 
 );
+
 
 always @(posedge clk)begin
 	if(rst_32)
@@ -97,7 +113,7 @@ always @(posedge clk)begin
 			INIT_32: 										state_32 <= READY_RCV_32;
 			READY_RCV_32: if(1) 							state_32 <= RCV_DATA_32;
 			RCV_DATA_32: 									state_32 <= POSE_32;
-			POSE_32:	     if(arm_rd_en_g)				state_32 <= READY_SND_32;
+			POSE_32:	     if(arm_rd_en_a)				state_32 <= READY_SND_32;
 //			POSE_32:	     if(1)							state_32 <= READY_SND_32;
 			READY_SND_32: if(data_full_32 == 0)		state_32 <= SND_DATA_32_x;
 //			READY_SND_32: if(1)							state_32 <= SND_DATA_32_x;
@@ -111,32 +127,32 @@ assign rcv_en_32 = (state_32 == RCV_DATA_32);
 
 assign snd_en_32 = (state_32 > READY_SND_32);
 
-assign snd_data_32 = (state_32 == SND_DATA_32_x)? gyro_x_reg:
-							(state_32 == SND_DATA_32_y)? gyro_y_reg:
-							(state_32 == SND_DATA_32_z)? gyro_z_reg:0;
+assign snd_data_32 = (state_32 == SND_DATA_32_x)? accel_x_reg:
+							(state_32 == SND_DATA_32_y)? accel_y_reg:
+							(state_32 == SND_DATA_32_z)? accel_z_reg:0;
 
 always @(posedge clk) begin
 	if (rst_32) begin
-		gyro_x_reg <= 0;
-		gyro_y_reg <= 0;
-		gyro_z_reg <= 0;
+		accel_x_reg <= 0;
+		accel_y_reg <= 0;
+		accel_z_reg <= 0;
 	end
 	else
 		case (state_32)
 			INIT_32: begin
-				gyro_x_reg <= 0;
-				gyro_y_reg <= 0;
-				gyro_z_reg <= 0;
+				accel_x_reg <= 0;
+				accel_y_reg <= 0;
+				accel_z_reg <= 0;
 			end
 			READY_RCV_32: begin
-				gyro_x_reg <= 0;
-				gyro_y_reg <= 0;
-				gyro_z_reg <= 0;
+				accel_x_reg <= 0;
+				accel_y_reg <= 0;
+				accel_z_reg <= 0;
 			end
 			POSE_32: begin
-				gyro_x_reg <= gyro_x;
-				gyro_y_reg <= gyro_y;
-				gyro_z_reg <= gyro_z;
+				accel_x_reg <= accel_x;
+				accel_y_reg <= accel_y;
+				accel_z_reg <= accel_z;
 			end
 		endcase
 end
