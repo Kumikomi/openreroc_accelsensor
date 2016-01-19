@@ -1,1 +1,1 @@
-cp -rf test_gyro ~/your_catkin_ws/
+cp -rf test_accel ~/your_catkin_ws/
