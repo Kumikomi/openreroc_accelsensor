@@ -1,1 +1,0 @@
-# openreroc_accelsensor
